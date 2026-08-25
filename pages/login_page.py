@@ -1,11 +1,11 @@
 from pages.base_page import BasePage
 from locators.login_locators import LoginLocators
-from selenium.webdriver.support import expected_conditions as EC
+from utils.constants import LOGIN_URL
 
 
 class LoginPage(BasePage):
 
-    URL = "https://qa-stellarburgers.education-services.ru/login"
+    URL = LOGIN_URL
 
     def open(self):
         super().open(self.URL)
@@ -20,22 +20,24 @@ class LoginPage(BasePage):
         self.wait_for_modals_to_disappear()
         self.click(LoginLocators.LOGIN_BUTTON)
         self.wait.until(
-                    EC.visibility_of_element_located(
-                        LoginLocators.ACCOUNT_LINK
-                    )
-                )
+            lambda driver: self.is_element_visible(
+                LoginLocators.ACCOUNT_LINK
+            )
+        )
 
     def login(self, email, password):
         self.enter_email(email)
         self.enter_password(password)
         self.click_login()
 
-        self.wait.until(
-            EC.visibility_of_element_located(
-                LoginLocators.ACCOUNT_LINK
-            )
-        )
-
     def click_forgot_password(self):
         self.wait_for_modals_to_disappear()
         self.click(LoginLocators.FORGOT_PASSWORD_LINK)
+
+    def click_password_visibility(self):
+        self.click(LoginLocators.PASSWORD_VISIBILITY_BUTTON)
+
+    def is_login_button_displayed(self):
+        return self.is_element_visible(
+            LoginLocators.LOGIN_BUTTON
+        )

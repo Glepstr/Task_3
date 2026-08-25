@@ -26,3 +26,18 @@ class ForgotPasswordLocators:
         By.CSS_SELECTOR,
         ".input_type_password .input__icon-action"
     )
+
+    CODE_INPUT = (
+        By.XPATH,
+        "//input[@name='name' and @type='text']"
+    )
+
+    SAVE_BUTTON = (
+        By.XPATH,
+        "//button[normalize-space()='Сохранить']"
+    )
+
+    LOGIN_LINK = (
+        By.XPATH,
+        "//a[normalize-space()='Войти']"
+    )

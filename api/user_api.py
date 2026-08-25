@@ -2,9 +2,11 @@ import uuid
 
 import requests
 
+from utils.constants import API_BASE_URL
+
 
 class UserApi:
-    BASE_URL = "https://qa-stellarburgers.education-services.ru/api"
+    BASE_URL = API_BASE_URL
 
     def create_user(self):
         unique_id = uuid.uuid4().hex[:8]

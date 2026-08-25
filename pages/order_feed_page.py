@@ -1,10 +1,11 @@
 from pages.base_page import BasePage
 from locators.order_feed_locators import OrderFeedLocators
+from utils.constants import ORDER_FEED_URL
 
 
 class OrderFeedPage(BasePage):
 
-    URL = "https://qa-stellarburgers.education-services.ru/feed"
+    URL = ORDER_FEED_URL
 
     def open(self):
         super().open(self.URL)
@@ -18,23 +19,17 @@ class OrderFeedPage(BasePage):
         )
 
     def get_modal_order_number(self):
-        return self.find_element(
+        return self.get_text(
             OrderFeedLocators.MODAL_ORDER_NUMBER
-        ).text
+        )
 
     def get_order_numbers(self):
-        self.wait.until(
-            lambda driver: len(
-                driver.find_elements(
-                    *OrderFeedLocators.ORDER_NUMBERS
-                )
-            ) > 0
-        )
+        self.wait_for_orders()
 
         return [
             element.text
-            for element in self.driver.find_elements(
-                *OrderFeedLocators.ORDER_NUMBERS
+            for element in self.find_elements(
+                OrderFeedLocators.ORDER_NUMBERS
             )
         ]
 
@@ -44,32 +39,47 @@ class OrderFeedPage(BasePage):
         self.wait.until(
             lambda driver: expected_order in [
                 element.text
-                for element in driver.find_elements(
-                    *OrderFeedLocators.ORDER_NUMBERS
+                for element in self.find_elements(
+                    OrderFeedLocators.ORDER_NUMBERS
                 )
             ]
         )
+        return True
 
     def wait_for_orders(self):
         self.wait.until(
-            lambda driver: driver.find_elements(
-                *OrderFeedLocators.FIRST_ORDER
+            lambda driver: self.find_elements(
+                OrderFeedLocators.FIRST_ORDER
             )
         )
 
     def get_total_orders_count(self):
         return int(
-            self.find_element(
+            self.get_text(
                 OrderFeedLocators.TOTAL_ORDERS_COUNTER
-            ).text
+            )
         )
 
     def get_today_orders_count(self):
         return int(
-            self.find_element(
+            self.get_text(
                 OrderFeedLocators.TODAY_ORDERS_COUNTER
-            ).text
+            )
         )
+
+    def wait_for_total_orders_count_increase(self, initial_count):
+        self.wait.until(
+            lambda driver:
+            self.get_total_orders_count() > initial_count
+        )
+        return True
+
+    def wait_for_today_orders_count_increase(self, initial_count):
+        self.wait.until(
+            lambda driver:
+            self.get_today_orders_count() > initial_count
+        )
+        return True
 
     def wait_for_order_in_work(self, order_number):
         formatted_number = order_number.zfill(6)
@@ -77,8 +87,9 @@ class OrderFeedPage(BasePage):
         self.wait.until(
             lambda driver: formatted_number in [
                 element.text
-                for element in driver.find_elements(
-                    *OrderFeedLocators.WORKING_ORDER_NUMBERS
+                for element in self.find_elements(
+                    OrderFeedLocators.WORKING_ORDER_NUMBERS
                 )
             ]
         )
+        return True

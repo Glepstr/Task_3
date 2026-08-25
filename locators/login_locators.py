@@ -20,6 +20,11 @@ class LoginLocators:
         "//a[normalize-space()='Восстановить пароль']"
     )
 
+    PASSWORD_VISIBILITY_BUTTON = (
+        By.CSS_SELECTOR,
+        ".input_type_password .input__icon-action"
+    )
+
     OVERLAY = (
         By.CSS_SELECTOR,
         ".Modal_modal_overlay__x2ZCr"

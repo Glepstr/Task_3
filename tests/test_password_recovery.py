@@ -1,6 +1,5 @@
 import allure
 
-from locators.forgot_password_locators import ForgotPasswordLocators
 from pages.forgot_password_page import ForgotPasswordPage
 from pages.login_page import LoginPage
 
@@ -15,8 +14,7 @@ class TestPasswordRecovery:
         login_page.open()
         login_page.click_forgot_password()
 
-        assert forgot_password_page.get_current_url() == \
-            ForgotPasswordPage.URL
+        assert forgot_password_page.get_current_url() ==             ForgotPasswordPage.URL
 
     @allure.title("Ввод email и переход к форме восстановления пароля")
     def test_password_recovery_form(self, driver, test_user):
@@ -31,11 +29,7 @@ class TestPasswordRecovery:
         )
         forgot_password_page.click_restore()
 
-        password_input = forgot_password_page.find_element(
-            ForgotPasswordLocators.PASSWORD_INPUT
-        )
-
-        assert password_input.is_displayed()
+        assert forgot_password_page.is_password_input_displayed()
 
     @allure.title("Поле пароля подсвечивается после клика на глазик")
     def test_password_field_becomes_active(self, driver, test_user):

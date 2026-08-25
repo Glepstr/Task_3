@@ -1,10 +1,11 @@
 from pages.base_page import BasePage
 from locators.main_locators import MainLocators
+from utils.constants import CONSTRUCTOR_URL
 
 
 class MainPage(BasePage):
 
-    URL = "https://qa-stellarburgers.education-services.ru/"
+    URL = CONSTRUCTOR_URL
 
     def open(self):
         super().open(self.URL)

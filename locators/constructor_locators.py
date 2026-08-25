@@ -54,3 +54,4 @@ class ConstructorLocators:
         By.CSS_SELECTOR,
         "button.Modal_modal__close__TnseK"
     )
+    

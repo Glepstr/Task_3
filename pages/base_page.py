@@ -1,8 +1,8 @@
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from locators.base_locators import BaseLocators
-from locators.constructor_locators import ConstructorLocators
 
 
 class BasePage:
@@ -19,6 +19,9 @@ class BasePage:
             EC.visibility_of_element_located(locator)
         )
 
+    def find_elements(self, locator):
+        return self.driver.find_elements(*locator)
+
     def click(self, locator):
         self.wait.until(
             EC.element_to_be_clickable(locator)
@@ -28,6 +31,9 @@ class BasePage:
         element = self.find_element(locator)
         element.clear()
         element.send_keys(text)
+
+    def get_text(self, locator):
+        return self.find_element(locator).text
 
     def get_current_url(self):
         return self.driver.current_url
@@ -43,12 +49,26 @@ class BasePage:
         )
 
     def is_element_visible(self, locator):
-        return any(
-            element.is_displayed()
-            for element in self.driver.find_elements(*locator)
+        return self.wait.until(
+            lambda driver: any(
+                element.is_displayed()
+                for element in self.find_elements(locator)
+            )
         )
 
     def wait_for_element_to_disappear(self, locator):
         self.wait.until(
             EC.invisibility_of_element_located(locator)
         )
+
+    def get_browser_name(self):
+        return self.driver.name
+
+    def execute_script(self, script, *args):
+        return self.driver.execute_script(script, *args)
+
+    def drag_and_drop(self, source, target):
+        ActionChains(self.driver).drag_and_drop(
+            source,
+            target
+        ).perform()

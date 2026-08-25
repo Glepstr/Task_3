@@ -1,12 +1,11 @@
-from selenium.webdriver.common.action_chains import ActionChains
 from pages.base_page import BasePage
 from locators.constructor_locators import ConstructorLocators
-from locators.base_locators import BaseLocators
+from utils.constants import CONSTRUCTOR_URL
 
 
 class ConstructorPage(BasePage):
 
-    URL = "https://qa-stellarburgers.education-services.ru/"
+    URL = CONSTRUCTOR_URL
 
     def open(self):
         super().open(self.URL)
@@ -30,17 +29,21 @@ class ConstructorPage(BasePage):
         )
 
     def is_ingredient_modal_displayed(self):
-        elements = self.driver.find_elements(
-            *ConstructorLocators.INGREDIENT_MODAL_TITLE
+        return any(
+            element.is_displayed()
+            for element in self.find_elements(
+                ConstructorLocators.INGREDIENT_MODAL_TITLE
+            )
         )
 
-        return bool(elements) and elements[0].is_displayed()
+    def is_bun_displayed(self):
+        return self.is_element_visible(
+            ConstructorLocators.BUN
+        )
 
     def get_bun_counter(self):
         return int(
-            self.find_element(
-                ConstructorLocators.BUN_COUNTER
-            ).text
+            self.get_text(ConstructorLocators.BUN_COUNTER)
         )
 
     def drag_bun_to_basket(self):
@@ -49,8 +52,8 @@ class ConstructorPage(BasePage):
         bun = self.find_element(ConstructorLocators.BUN)
         basket = self.find_element(ConstructorLocators.BASKET)
 
-        if self.driver.name == "firefox":
-            self.driver.execute_script(
+        if self.get_browser_name() == "firefox":
+            self.execute_script(
                 """
                 function triggerDragAndDrop(source, target) {
                     const dragStart = new CustomEvent(
@@ -74,30 +77,23 @@ class ConstructorPage(BasePage):
                 }
 
                 triggerDragAndDrop(arguments[0], arguments[1]);
-                """, # Способа лучше не нашел. Сидел с нейронкой, пробовал много чего, ничего не помогло кроме этой сложной конструкции.
+                """,
                 bun,
                 basket
             )
-
             return
 
-        ActionChains(self.driver).drag_and_drop(
-            bun,
-            basket
-        ).perform()
-    
+        self.drag_and_drop(bun, basket)
+
     def click_order(self):
         self.wait_for_modals_to_disappear()
         self.click(ConstructorLocators.ORDER_BUTTON)
 
     def wait_for_bun_counter_increase(self, initial_counter):
         self.wait.until(
-            lambda driver: int(
-                self.find_element(
-                    ConstructorLocators.BUN_COUNTER
-                ).text
-            ) > initial_counter
+            lambda driver: self.get_bun_counter() > initial_counter
         )
+        return True
 
     def get_order_number(self):
         return self.wait.until(
@@ -106,25 +102,17 @@ class ConstructorPage(BasePage):
                 if number != "9999"
                 else False
             )
-            if (number := driver.find_element(
-                *ConstructorLocators.ORDER_NUMBER
-            ).text)
+            if (number := self.get_text(
+                ConstructorLocators.ORDER_NUMBER
+            ))
             else False
         )
 
     def is_order_modal_displayed(self):
-        return self.find_element(
+        return self.is_element_visible(
             ConstructorLocators.ORDER_NUMBER
-        ).is_displayed()
+        )
 
     def close_order_modal(self):
         self.click(ConstructorLocators.ORDER_MODAL_CLOSE)
-
-        self.wait.until(
-            lambda driver: all(
-                not overlay.is_displayed()
-                for overlay in driver.find_elements(
-                    *BaseLocators.MODAL_OVERLAYS
-                )
-            )
-        )
+        self.wait_for_modals_to_disappear()

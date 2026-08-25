@@ -18,11 +18,6 @@ class OrderFeedLocators:
         "div.Modal_orderBox__1xWdi > p"
     )
 
-    ORDER_NUMBER = (
-        By.CSS_SELECTOR,
-        "ul.OrderFeed_list__OLh59l p.text_type_digits-default"
-    )
-
     ORDER_NUMBERS = (
         By.CSS_SELECTOR,
         "p.text_type_digits-default"
